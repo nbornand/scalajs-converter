@@ -11,7 +11,6 @@ object ApplicationBuild extends Build {
     scalaVersion := "2.11.4"
   )
 
-
   lazy val root = (project in file(".")).
     settings(commonSettings: _*).
     settings(
@@ -20,7 +19,10 @@ object ApplicationBuild extends Build {
       libraryDependencies ++= Seq(
         "org.jsoup" % "jsoup" % "1.8.1",
         "com.scalatags" %% "scalatags" % "0.4.2",
-        "org.scala-lang" % "scala-reflect" % scalaVersion.value
+        "org.scala-lang" % "scala-reflect" % scalaVersion.value,
+        "org.scala-lang.modules" %% "scala-xml" % "1.0.2",
+        "org.scalatest" % "scalatest_2.11" % "2.2.1" % Test,
+        "org.scala-lang" % "scala-compiler" % scalaVersion.value % Test
       )
     )
 

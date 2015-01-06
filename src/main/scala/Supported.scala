@@ -6,7 +6,7 @@ import scala.collection.{mutable => mut}
 
 /**
  * Gather sets of tags, names and style that are "natively" supported by scalatags
- * It uses reflection such as to cope with small changes
+ * It uses reflection such as to be able to cope with small changes
  */
 object Supported {
 
@@ -17,7 +17,7 @@ object Supported {
   /**
    * Some keywords such as "style" can be both tag or attributes
    */
-  val ambiguous = (tags & attrs) ++ (tags & styles) ++ (attrs & styles)
+  val ambiguous = (tags & attrs) ++ (tags & styles.keySet) ++ (attrs & styles.keySet)
 
   private def supportedTags: Set[String] = {
 
@@ -32,7 +32,6 @@ object Supported {
 
   }
 
-
     private def supportedAttrs: Set[String] = {
 
       val typeToInspect = List(typeOf[scalatags.generic.Attrs[_,_,_]], typeOf[scalatags.generic.SvgAttrs[_,_,_]])
@@ -45,23 +44,19 @@ object Supported {
 
     }
 
-    private def supportedStyles: Set[String] = {
+    private def supportedStyles: Map[String, Set[String]] = {
 
       val typeToInspect = List(typeOf[scalatags.generic.Styles[_,_,_]], typeOf[scalatags.generic.Styles2[_,_,_]])
       val supported = typeToInspect.flatMap( t => t.members.collect{
             case m if( m.typeSignature <:< typeOf[ scalatags.generic.Style]) => {
-              m.name.toString.trim()
+              val enum = m.typeSignature.members.collect{
+                case pair if pair.typeSignature.baseClasses.headOption.isDefined
+                  && (pair.typeSignature.resultType.baseClasses.head.name.toString equals "StylePair") => pair.name.toString.trim()
+              }
+              (m.name.toString.trim(), enum.toSet)
         }
       })
-      /*val typeToInspect2 = List(typeOf[scalatags.generic.StyleMisc[_,_,_]])
-      val supported2 = typeToInspect2.flatMap( t => t.members.collect{
-        case m if(true|| m.typeSignature <:< typeOf[ scalatags.generic.Style]) => {
-          println(m.typeSignature.members)
-          println(m.name)
-          m.name.toString
-        }
-      })*/
-      supported.toSet[String]
+      supported.toMap
     }
 
 }
