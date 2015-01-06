@@ -1,0 +1,8 @@
+.idea/
+project/target
+project/project
+rhino1_7R4/
+tag-source/
+tags.scala
+target/
+scalatag-builder.iml
