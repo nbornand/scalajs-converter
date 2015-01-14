@@ -10,7 +10,7 @@ import scala.collection.{mutable => mut}
  */
 object Supported {
 
-  val tags = supportedTags
+  val tags = supportedTags(typeOf[scalatags.generic.Tags[_, _, _]], typeOf[scalatags.generic.Tags2[_, _, _]])
   val attrs = supportedAttrs
   val styles = supportedStyles
 
@@ -19,9 +19,7 @@ object Supported {
    */
   val ambiguous = (tags & attrs) ++ (tags & styles.keySet) ++ (attrs & styles.keySet)
 
-  private def supportedTags: Set[String] = {
-
-    val typeToInspect = List(typeOf[scalatags.generic.Tags[_, _, _]], typeOf[scalatags.generic.Tags2[_, _, _]])
+  private def supportedTags(typeToInspect:Type*): Set[String] = {
 
     val supported = typeToInspect.flatMap( t => t.members.collect{
       case m if m.typeSignature.baseClasses.headOption.isDefined
